@@ -534,3 +534,197 @@ The **hidden state** at each time step carries forward information about **all p
 - The RNN updates its hidden state at each time step, allowing it to "remember" the context of the sequence (like the words that came before), which is important for tasks like sentence completion or prediction.
 
 This is why you loop through each time step of the sequence and update the hidden state. The hidden state allows the RNN to maintain connections between words in the sequence, which helps with tasks that require context, such as sentence generation or next-word prediction.
+
+
+I see where the confusion is coming from, and I’ll walk you through the code to clarify how the hidden state and sequence processing work in an RNN from scratch.
+
+In the code you've shared, you're correctly pointing out that the hidden state `h_t` is updated at each time step, and the calculation is done for the **entire batch** at each time step, not just for a single sequence.
+
+Let’s break down your code step by step:
+
+### Code Breakdown
+
+1. **Initialization:**
+
+   ```python
+   batch_size, seq_len, _ = x.shape
+   h_t = torch.zeros(batch_size, self.hidden_size)  # Initial hidden state (h_0)
+   ```
+
+   Here, `x` is the input tensor, with shape `(batch_size, seq_len, input_size)` where:
+   - `batch_size` is the number of sequences in the batch.
+   - `seq_len` is the length of each sequence.
+   - `input_size` is the number of features for each word/element in the sequence.
+
+   `h_t` is initialized as zeros, and its shape is `(batch_size, hidden_size)`. This represents the initial hidden state for the entire batch.
+
+2. **Loop through time steps:**
+
+   ```python
+   for t in range(seq_len):
+       x_t = x[:, t, :]  # Get input at the time step t (shape: (batch_size, input_size))
+   ```
+
+   In this loop, the code processes one time step at a time for all sequences in the batch. The `x[:, t, :]` extracts the feature vector for the word at time step `t` from all sequences in the batch (across all sequences).
+
+   For example:
+   - At `t=0`, `x_t = x[:, 0, :]` will give the first word of **all sequences** in the batch.
+   - At `t=1`, `x_t = x[:, 1, :]` will give the second word of **all sequences** in the batch, and so on.
+
+3. **Update hidden state at each time step:**
+
+   ```python
+   h_t = nn.LeakyReLU(0.1)(torch.matmul(x_t, self.W_ih.T) + torch.matmul(h_t, self.W_hh.T) + self.b_h)
+   ```
+
+   This line calculates the hidden state `h_t` for the current time step `t`, based on:
+   - The input at time step `t` (`x_t`), which comes from all sequences at the same time step.
+   - The previous hidden state (`h_t`), which contains information about the previous words in the sequences.
+   
+   The formula used here is:
+   \[
+   h_t = \text{LeakyReLU}(W_{ih} \cdot x_t + W_{hh} \cdot h_{t-1} + b_h)
+   \]
+   - `x_t` is the input at the current time step for all sequences in the batch.
+   - `W_ih` is the weight matrix for input to hidden.
+   - `W_hh` is the weight matrix for hidden to hidden (previous hidden state).
+   - `b_h` is the bias term for the hidden state.
+
+   This updates the hidden state for the entire batch at the current time step. So, even though you’re processing one time step at a time, the operation is applied to all sequences in the batch at once.
+
+4. **Get output at each time step:**
+
+   ```python
+   output_t = torch.matmul(h_t, self.W_ho.T) + self.b_o
+   outputs.append(output_t)
+   ```
+
+   After updating the hidden state, the output at the current time step `t` is computed using the updated hidden state `h_t`. This is done for all sequences in the batch, so the shape of `output_t` is `(batch_size, output_size)`.
+
+5. **Stack outputs:**
+
+   ```python
+   outputs = torch.stack(outputs, dim=1)
+   ```
+
+   After processing all time steps, the outputs are stacked along dimension 1 (i.e., along the sequence length dimension) to create a tensor of shape `(batch_size, seq_len, output_size)`. This tensor contains the outputs at each time step for all sequences in the batch.
+
+### Clarifying Your Confusion
+
+The confusion seems to be about whether each time step is processed individually or for the entire batch. Here's the key point:
+
+- **At each time step `t`, the RNN is processing the corresponding word (or input) for **all sequences in the batch**.** It doesn't process just one sequence in isolation. This means that:
+  - For time step `t=0`, you are processing the **first word** of all sequences in the batch.
+  - For time step `t=1`, you are processing the **second word** of all sequences in the batch, and so on.
+
+Each time step uses the entire batch of sequences, but the words of the sequences at the corresponding time step (e.g., first word for all sequences at `t=0`, second word at `t=1`).
+
+Thus, there is **no contradiction** with my earlier explanation. Both the code and the earlier explanation are consistent with each other.
+
+### Why this Works:
+
+This approach is crucial because, in sequence processing (such as in NLP tasks), the relationships between words in all sequences in the batch are learned simultaneously at each time step. Each word influences the hidden state, and the hidden state accumulates information about the previous words in the sequence (which is what allows the RNN to "remember" the context).
+
+#### In summary:
+- You are indeed processing one time step at a time for each sequence, but you are doing so **for all sequences in the batch simultaneously**. This means that the input at time step `t` for each sequence is used to update the hidden state and output for the entire batch, which is why `x[:, t, :]` is used.
+
+If you want the **second word** of a sequence to be processed after the **first word**, **and not the second word of the entire batch** as is the case in the usual RNN processing, this is a non-standard approach to processing sequences in an RNN. In a typical RNN, all sequences in the batch are processed in parallel, and for each time step `t`, the input for all sequences is processed together.
+
+To process the sequences one-by-one in a specific order (e.g., word by word for each sequence individually), you'd need to modify your RNN loop and batch processing.
+
+### Key Idea:
+What you're suggesting seems to be that, instead of processing the entire batch's first word, then the second word, and so on, you want to process each sequence **individually** in terms of time steps.
+
+Here’s how you can implement this:
+
+### Code Changes:
+
+#### 1. Loop through each sequence in the batch (instead of time steps):
+You'll loop over the entire batch of sequences first. For each sequence, you’ll iterate over the time steps (from 0 to `seq_len-1`) and compute the hidden state and output for each word individually in the sequence.
+
+#### 2. Process time steps for each sequence individually:
+Instead of taking the `t`-th word across all sequences (i.e., `x[:, t, :]`), you would need to iterate over each sequence, process one word at a time for that sequence, and update the hidden state accordingly.
+
+### Example Modified Code:
+
+```python
+def forward(self, x):
+    batch_size, seq_len, _ = x.shape
+    h_t = torch.zeros(batch_size, self.hidden_size)  # Initial hidden state (h_0)
+
+    outputs = []
+    for i in range(batch_size):  # Loop through each sequence in the batch
+        sequence = x[i]  # This is the i-th sequence (of shape (seq_len, input_size))
+        h_t_seq = torch.zeros(self.hidden_size)  # Initialize hidden state for this sequence
+
+        for t in range(seq_len):  # Process word-by-word in the sequence
+            x_t = sequence[t, :]  # Get the word at time step t for this sequence (shape: (input_size,))
+            
+            # Update hidden state using the current word and previous hidden state
+            h_t_seq = nn.LeakyReLU(0.1)(torch.matmul(x_t, self.W_ih.T) + torch.matmul(h_t_seq, self.W_hh.T) + self.b_h)
+
+            # Compute output for the current time step
+            output_t = torch.matmul(h_t_seq, self.W_ho.T) + self.b_o
+            outputs.append(output_t)
+
+    # Stack the outputs to form the final tensor (of shape: batch_size x seq_len x output_size)
+    outputs = torch.stack(outputs, dim=1)  # Stack along the sequence length dimension
+
+    return outputs
+```
+
+### Key Changes:
+
+1. **Loop through sequences in the batch (`for i in range(batch_size)`)**: This ensures that we are processing each sequence individually.
+   
+   - `sequence = x[i]` gives the `i`-th sequence from the batch, which has shape `(seq_len, input_size)`.
+   
+2. **Process each word one by one within each sequence**: For each sequence, we loop over the time steps (`for t in range(seq_len)`), and update the hidden state `h_t_seq` one word at a time, just as you would in an RNN.
+   
+   - `x_t = sequence[t, :]` gets the `t`-th word for the current sequence, which has shape `(input_size,)`.
+   - The hidden state `h_t_seq` is updated for each word in the sequence individually.
+
+3. **Output at each time step**: The output is computed after each word in the sequence is processed.
+
+4. **Stack the outputs**: Finally, after processing all sequences and time steps, we stack the outputs along the sequence length dimension (axis 1).
+
+### Why this Works:
+This code processes **one sequence at a time**. For each sequence, the words are processed sequentially, and the hidden state is updated in the usual way. This ensures that for a given sequence, the second word will be calculated **only after** the first word has been processed and the hidden state has been updated.
+
+### Example Walkthrough:
+
+If you have the following input tensor `x`:
+
+```python
+x = tensor([[[ 0.,  1.,  2.],  # Sequence 1, word 1
+             [ 3.,  4.,  5.],  # Sequence 1, word 2
+             [ 6.,  7.,  8.],  # Sequence 1, word 3
+             [ 9., 10., 11.]], # Sequence 1, word 4
+
+            [[12., 13., 14.],  # Sequence 2, word 1
+             [15., 16., 17.],  # Sequence 2, word 2
+             [18., 19., 20.],  # Sequence 2, word 3
+             [21., 22., 23.]]] # Sequence 2, word 4
+```
+
+The RNN will process:
+1. The first sequence: "The cat sat on the mat"
+   - It first processes "The" (updates hidden state `h_t_seq`).
+   - Then processes "cat" (updates hidden state `h_t_seq`).
+   - Then processes "sat" and so on.
+
+2. Then, it will process the second sequence: "A dog ran fast in the park"
+   - It first processes "A" (updates hidden state `h_t_seq`).
+   - Then processes "dog" and so on.
+
+Each sequence is processed one by one, and the words within each sequence are processed in order.
+
+### Performance Consideration:
+One thing to keep in mind is that this approach is **slower** than processing all sequences in parallel. The typical batch processing (i.e., processing all sequences simultaneously at each time step) is much more efficient because it takes advantage of parallel computation, which is why it's generally preferred. However, if you specifically need to process each sequence independently, this approach works.
+
+### Applications of This Approach:
+This technique can be useful in situations where:
+- You have sequences of varying lengths and want to process each sequence step by step.
+- You want to isolate the processing of each sequence (e.g., for debugging or in some specialized cases where batch processing is not appropriate).
+
+However, keep in mind that the traditional RNN design (processing all sequences in parallel) is generally more efficient and is the standard approach in most frameworks like PyTorch and TensorFlow.
