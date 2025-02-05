@@ -520,3 +520,268 @@ y_i \cdot (1 - y_i) & \text{if } i = j \\
 $$
 
 This is the Jacobian matrix of the Softmax function. It represents how each output of the Softmax function changes with respect to each input, and the matrix has a special structure where the diagonal elements are $ y_i (1 - y_i) $, and the off-diagonal elements are $ -y_i \cdot y_j $.
+
+Sure! Let's break it down step by step.
+
+### Step 1: Understanding the first equation
+You have the sum:
+
+$$
+\sum_{k=1}^{n} e^{z_k} - e^{z_i} = \sum_{k \neq i} e^{z_k}
+$$
+
+#### Interpretation:
+
+This equation is dealing with a sum over $ e^{z_k} $ where $ k $ ranges from 1 to $ n $, with the condition that you're subtracting the term $ e^{z_i} $ from the sum.
+
+- The left-hand side involves summing all terms $ e^{z_k} $ for $ k $ from 1 to $ n $, but excluding the term when $ k = i $.
+- The right-hand side shows the sum over all $ k \neq i $, i.e., the sum of all $ e^{z_k} $ where $ k $ is not equal to $ i $.
+
+The equation tells us that if you subtract the term $ e^{z_i} $ from the total sum, you're left with exactly the sum of all terms $ e^{z_k} $ for $ k \neq i $.
+
+### Step 2: Derivative of $ y_i $
+
+Now let's look at the next part:
+
+$$
+\frac{\partial y_i}{\partial z_i} = y_i (1 - y_i)
+$$
+
+#### Context:
+
+We might be dealing with a **softmax function**, which is often used in machine learning for classification tasks. The function is defined as:
+
+$$
+y_i = \frac{e^{z_i}}{\sum_{k=1}^{n} e^{z_k}}
+$$
+
+This is the probability of class $ i $ in a classification setting, where $ y_i $ depends on the $ z_i $ (often called logits or raw scores).
+
+#### Derivation of the derivative:
+
+Now, let’s differentiate $ y_i $ with respect to $ z_i $:
+
+1. **Start with the expression for $ y_i $:**
+   $$
+   y_i = \frac{e^{z_i}}{\sum_{k=1}^{n} e^{z_k}}
+   $$
+
+2. **Use the quotient rule** for derivatives. The quotient rule states that for a function of the form $ \frac{u(z)}{v(z)} $, the derivative is:
+
+   $$
+   \frac{d}{dz} \left( \frac{u(z)}{v(z)} \right) = \frac{u'(z) v(z) - u(z) v'(z)}{[v(z)]^2}
+   $$
+
+   Here, $ u(z) = e^{z_i} $ and $ v(z) = \sum_{k=1}^{n} e^{z_k} $.
+
+3. **Differentiate $ u(z) = e^{z_i} $:**
+   $$
+   u'(z) = \frac{d}{dz_i} e^{z_i} = e^{z_i}
+   $$
+
+4. **Differentiate $ v(z) = \sum_{k=1}^{n} e^{z_k} $ with respect to $ z_i $:**
+
+   Since the sum involves $ e^{z_k} $ for all $ k $, the derivative with respect to $ z_i $ affects only the $ e^{z_i} $ term (because all other terms are constants when differentiating with respect to $ z_i $):
+
+   $$
+   v'(z_i) = e^{z_i}
+   $$
+
+5. **Apply the quotient rule:**
+   $$
+   \frac{\partial y_i}{\partial z_i} = \frac{e^{z_i} \left( \sum_{k=1}^{n} e^{z_k} \right) - e^{z_i} \cdot e^{z_i}}{\left( \sum_{k=1}^{n} e^{z_k} \right)^2}
+   $$
+
+6. **Simplify the numerator:**
+   $$
+   \frac{\partial y_i}{\partial z_i} = \frac{e^{z_i} \left( \sum_{k=1}^{n} e^{z_k} - e^{z_i} \right)}{\left( \sum_{k=1}^{n} e^{z_k} \right)^2}
+   $$
+
+7. **Notice the structure of the numerator:**
+   The term inside the parentheses is the same as $ \sum_{k \neq i} e^{z_k} $, as we noted in the first equation. So we have:
+
+   $$
+   \frac{\partial y_i}{\partial z_i} = \frac{e^{z_i} \cdot \sum_{k \neq i} e^{z_k}}{\left( \sum_{k=1}^{n} e^{z_k} \right)^2}
+   $$
+
+8. **Factor out the expression for $ y_i $:**
+   Now, observe that:
+
+   $$
+   y_i = \frac{e^{z_i}}{\sum_{k=1}^{n} e^{z_k}}
+   $$
+
+   Therefore, $ 1 - y_i = \frac{\sum_{k \neq i} e^{z_k}}{\sum_{k=1}^{n} e^{z_k}} $.
+
+   So, we can rewrite the derivative as:
+
+   $$
+   \frac{\partial y_i}{\partial z_i} = y_i \left( 1 - y_i \right)
+   $$
+
+### Conclusion:
+
+- The term $ y_i $ represents the probability of class $ i $ in the softmax function.
+- The derivative $ \frac{\partial y_i}{\partial z_i} = y_i (1 - y_i) $ is the key property of the softmax function. It shows how the probability of class $ i $ changes with respect to its input $ z_i $, and this is very useful in backpropagation for optimization in machine learning models.
+
+Sure! Let's break it down step by step.
+
+### Step 1: Understanding the first equation
+You have the sum:
+
+$$
+\sum_{k=1}^{n} e^{z_k} - e^{z_i} = \sum_{k \neq i} e^{z_k}
+$$
+
+#### Interpretation:
+
+This equation is dealing with a sum over $ e^{z_k} $ where $ k $ ranges from 1 to $ n $, with the condition that you're subtracting the term $ e^{z_i} $ from the sum.
+
+- The left-hand side involves summing all terms $ e^{z_k} $ for $ k $ from 1 to $ n $, but excluding the term when $ k = i $.
+- The right-hand side shows the sum over all $ k \neq i $, i.e., the sum of all $ e^{z_k} $ where $ k $ is not equal to $ i $.
+
+The equation tells us that if you subtract the term $ e^{z_i} $ from the total sum, you're left with exactly the sum of all terms $ e^{z_k} $ for $ k \neq i $.
+
+### Step 2: Derivative of $ y_i $
+
+Now let's look at the next part:
+
+$$
+\frac{\partial y_i}{\partial z_i} = y_i (1 - y_i)
+$$
+
+#### Context:
+
+We might be dealing with a **softmax function**, which is often used in machine learning for classification tasks. The function is defined as:
+
+$$
+y_i = \frac{e^{z_i}}{\sum_{k=1}^{n} e^{z_k}}
+$$
+
+This is the probability of class $ i $ in a classification setting, where $ y_i $ depends on the $ z_i $ (often called logits or raw scores).
+
+#### Derivation of the derivative:
+
+Now, let’s differentiate $ y_i $ with respect to $ z_i $:
+
+1. **Start with the expression for $ y_i $:**
+   $$
+   y_i = \frac{e^{z_i}}{\sum_{k=1}^{n} e^{z_k}}
+   $$
+
+2. **Use the quotient rule** for derivatives. The quotient rule states that for a function of the form $ \frac{u(z)}{v(z)} $, the derivative is:
+
+   $$
+   \frac{d}{dz} \left( \frac{u(z)}{v(z)} \right) = \frac{u'(z) v(z) - u(z) v'(z)}{[v(z)]^2}
+   $$
+
+   Here, $ u(z) = e^{z_i} $ and $ v(z) = \sum_{k=1}^{n} e^{z_k} $.
+
+3. **Differentiate $ u(z) = e^{z_i} $:**
+   $$
+   u'(z) = \frac{d}{dz_i} e^{z_i} = e^{z_i}
+   $$
+
+4. **Differentiate $ v(z) = \sum_{k=1}^{n} e^{z_k} $ with respect to $ z_i $:**
+
+   Since the sum involves $ e^{z_k} $ for all $ k $, the derivative with respect to $ z_i $ affects only the $ e^{z_i} $ term (because all other terms are constants when differentiating with respect to $ z_i $):
+
+   $$
+   v'(z_i) = e^{z_i}
+   $$
+
+   Sure! Let's start by solving the equation:
+
+$$
+1 - y_i = \frac{\sum_{k \neq i} e^{z_k}}{\sum_{k=1}^{n} e^{z_k}}
+$$
+
+### Step 1: Rearrange the equation
+
+We can isolate $ y_i $ on one side. To do that, subtract both sides of the equation from 1:
+
+$$
+y_i = 1 - \frac{\sum_{k \neq i} e^{z_k}}{\sum_{k=1}^{n} e^{z_k}}
+$$
+
+### Step 2: Simplify the expression
+
+Now, let's simplify the right-hand side of the equation. Notice that:
+
+$$
+\sum_{k \neq i} e^{z_k} = \sum_{k=1}^{n} e^{z_k} - e^{z_i}
+$$
+
+Substituting this into the equation, we get:
+
+$$
+y_i = 1 - \frac{\sum_{k=1}^{n} e^{z_k} - e^{z_i}}{\sum_{k=1}^{n} e^{z_k}}
+$$
+
+### Step 3: Simplify further
+
+Now, distribute the denominator:
+
+$$
+y_i = 1 - \left( \frac{\sum_{k=1}^{n} e^{z_k}}{\sum_{k=1}^{n} e^{z_k}} - \frac{e^{z_i}}{\sum_{k=1}^{n} e^{z_k}} \right)
+$$
+
+$$
+y_i = 1 - 1 + \frac{e^{z_i}}{\sum_{k=1}^{n} e^{z_k}}
+$$
+
+### Step 4: Final expression
+
+Simplifying the terms:
+
+$$
+y_i = \frac{e^{z_i}}{\sum_{k=1}^{n} e^{z_k}}
+$$
+
+### Conclusion:
+
+The equation simplifies to the **softmax function**:
+
+$$
+y_i = \frac{e^{z_i}}{\sum_{k=1}^{n} e^{z_k}}
+$$
+
+This is the standard form for calculating the probability of class $ i $ in the softmax function, where $ z_i $ is the raw score or logit for class $ i $, and the denominator is the sum of exponentials of all logits.
+
+5. **Apply the quotient rule:**
+   $$
+   \frac{\partial y_i}{\partial z_i} = \frac{e^{z_i} \left( \sum_{k=1}^{n} e^{z_k} \right) - e^{z_i} \cdot e^{z_i}}{\left( \sum_{k=1}^{n} e^{z_k} \right)^2}
+   $$
+
+6. **Simplify the numerator:**
+   $$
+   \frac{\partial y_i}{\partial z_i} = \frac{e^{z_i} \left( \sum_{k=1}^{n} e^{z_k} - e^{z_i} \right)}{\left( \sum_{k=1}^{n} e^{z_k} \right)^2}
+   $$
+
+7. **Notice the structure of the numerator:**
+   The term inside the parentheses is the same as $ \sum_{k \neq i} e^{z_k} $, as we noted in the first equation. So we have:
+
+   $$
+   \frac{\partial y_i}{\partial z_i} = \frac{e^{z_i} \cdot \sum_{k \neq i} e^{z_k}}{\left( \sum_{k=1}^{n} e^{z_k} \right)^2}
+   $$
+
+8. **Factor out the expression for $ y_i $:**
+   Now, observe that:
+
+   $$
+   y_i = \frac{e^{z_i}}{\sum_{k=1}^{n} e^{z_k}}
+   $$
+
+   Therefore, $ 1 - y_i = \frac{\sum_{k \neq i} e^{z_k}}{\sum_{k=1}^{n} e^{z_k}} $.
+
+   So, we can rewrite the derivative as:
+
+   $$
+   \frac{\partial y_i}{\partial z_i} = y_i \left( 1 - y_i \right)
+   $$
+
+### Conclusion:
+
+- The term $ y_i $ represents the probability of class $ i $ in the softmax function.
+- The derivative $ \frac{\partial y_i}{\partial z_i} = y_i (1 - y_i) $ is the key property of the softmax function. It shows how the probability of class $ i $ changes with respect to its input $ z_i $, and this is very useful in backpropagation for optimization in machine learning models.
+
