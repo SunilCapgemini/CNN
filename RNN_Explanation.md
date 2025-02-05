@@ -446,3 +446,91 @@ This represents only the features for the first sequence, but we want to process
 - The structure of the input allows the RNN to learn patterns across the batch at each time step, updating its hidden state accordingly. 
 
 I hope this clears up your confusion!
+
+
+Great point! You're right that in natural language processing (NLP) tasks like sentence completion, each word in the sentence is part of a sequence, and there is indeed a relationship between words, especially between a word and its previous word. Let’s break it down using a sentence completion example and how RNNs work in this context.
+
+### Example: Sentence Completion with an RNN
+
+Consider a task where you are using an RNN to predict the next word in a sentence based on previous words. We can model this as follows:
+
+#### Input sentence:
+Let's say the sentence is: **"The cat sat on the"**. The task is to predict the next word, and we will use an RNN to process the words one by one.
+
+For simplicity, let's represent each word as a vector (e.g., using word embeddings). The words will be represented by these vectors as input to the RNN.
+
+Let's say the sentence is represented by the following tensor `x`:
+
+```python
+x = tensor([[[ 0.,  1.,  2.],  # "The" (word at t=0)
+             [ 3.,  4.,  5.],  # "cat" (word at t=1)
+             [ 6.,  7.,  8.],  # "sat" (word at t=2)
+             [ 9., 10., 11.],  # "on" (word at t=3)
+             [12., 13., 14.]]]) # "the" (word at t=4)
+```
+
+Each "word" here (like "The", "cat", etc.) is represented by a vector with 3 features. The RNN will process one word at a time, updating its hidden state, which stores information about the previous words.
+
+### Processing the Sentence with an RNN
+
+An RNN processes the sequence word-by-word (or time step-by-time step). At each time step, the RNN uses the current word's vector and the hidden state from the previous time step to update the hidden state, which will then be used to predict the next word or make decisions.
+
+#### Time Step 0 (t=0): Word = "The"
+At time step 0, the input is the vector for the word "The" (`x[:, 0, :]`), and the hidden state at this point is initialized to zero (or some initial value).
+
+- The RNN takes the vector for "The" and combines it with the hidden state (which might be zero at this point).
+- The hidden state is updated based on this input.
+
+#### Time Step 1 (t=1): Word = "cat"
+At time step 1, the RNN takes the word "cat" (`x[:, 1, :]`), along with the updated hidden state from time step 0, to update the hidden state again.
+
+- The RNN now has information about both "The" and "cat". The hidden state reflects the context of the first two words, meaning it now "remembers" that the sentence started with "The cat".
+
+#### Time Step 2 (t=2): Word = "sat"
+At time step 2, the RNN processes the word "sat" (`x[:, 2, :]`) and uses the hidden state from time step 1 (which already contains information about "The" and "cat") to update the hidden state again.
+
+- Now, the RNN knows about "The cat sat", and the hidden state contains information about this phrase, helping it build up more context.
+
+#### Time Step 3 (t=3): Word = "on"
+At time step 3, the word "on" (`x[:, 3, :]`) is processed, and the hidden state is updated again, reflecting "The cat sat on".
+
+#### Time Step 4 (t=4): Word = "the"
+At time step 4, the word "the" (`x[:, 4, :]`) is processed, and the hidden state now reflects the entire sentence up to this point: "The cat sat on the".
+
+### Now, let’s address your specific question:
+
+#### Why does the RNN use `x[:, t, :]` for all sequences in the batch?
+
+- **Input at time step `t`**: The notation `x[:, t, :]` refers to the input at time step `t` for all sequences in the batch. Each sequence represents a sentence, and you want the RNN to process the entire batch of sentences at the same time.
+- **Batch processing**: RNNs are designed to process all sequences in a batch simultaneously. When you use `x[:, t, :]`, you are telling the RNN to take the word at time step `t` from each sequence in the batch.
+  
+For example, if you have a batch of sentences, say:
+
+1. "The cat sat on the mat."
+2. "A dog ran fast in the park."
+
+At time step `t=0`, the RNN will process:
+
+- "The" from the first sentence.
+- "A" from the second sentence.
+
+This allows the RNN to process all sentences in the batch at once, rather than processing them one by one.
+
+### Hidden States and Word Dependencies:
+
+Now, about the hidden state and how words influence each other:
+
+- **Hidden state propagation**: The RNN’s hidden state at each time step holds the context of all the previous words in the sequence. For example, when the RNN processes "sat" (at t=2), its hidden state not only reflects the word "sat" but also "The cat", which gives the context needed to predict what comes next.
+- **Word-to-word dependency**: Each word's hidden state is influenced by its preceding words, which is why we need to process the sequence word-by-word. The word "sat" at time step 2 is connected to "cat" at time step 1, and "cat" is connected to "The" at time step 0, and so on.
+
+The **hidden state** at each time step carries forward information about **all previous words** in the sequence. That’s why the RNN "remembers" the context as it moves through the sequence. By the time the RNN reaches the last word (e.g., "the" at t=4), it has a complete context of the entire sentence up to that point, and this context helps the RNN make decisions about what comes next.
+
+---
+
+### Final Summary:
+
+- The **hidden state** captures the relationship between each word and its previous words in the sequence.
+- We use `x[:, t, :]` to provide the RNN with the word at time step `t` across all sequences in the batch at once.
+- The RNN updates its hidden state at each time step, allowing it to "remember" the context of the sequence (like the words that came before), which is important for tasks like sentence completion or prediction.
+
+This is why you loop through each time step of the sequence and update the hidden state. The hidden state allows the RNN to maintain connections between words in the sequence, which helps with tasks that require context, such as sentence generation or next-word prediction.
