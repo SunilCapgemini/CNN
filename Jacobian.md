@@ -1,33 +1,33 @@
 We are given the following:
 
-- $ f(X) = XA^T + b $, where:
-  - $ X $ has shape $ (5, 2) $
-  - $ A $ has shape $ (4, 2) $
-  - $ b $ is a vector or matrix that we need to adjust to match the shape of the output of $ f(X) $.
+- $f(X) = XA^T + b$, where:
+  - $X$ has shape $(5, 2)$
+  - $A$ has shape $(4, 2)$
+  - $b$ is a vector or matrix that we need to adjust to match the shape of the output of $f(X)$.
   
-  So, let's begin by determining the correct shape for $ b $.
+  So, let's begin by determining the correct shape for $b$.
 
-### Step 1: Determine the shape of $ f(X) $
+### Step 1: Determine the shape of $f(X)$
 
-We need to compute the shape of $ f(X) = XA^T + b $. Here's the breakdown:
+We need to compute the shape of $f(X) = XA^T + b$. Here's the breakdown:
 
-- $ X $ has shape $ (5, 2) $.
-- $ A^T $ is the transpose of $ A $, so if $ A $ has shape $ (4, 2) $, then $ A^T $ will have shape $ (2, 4) $.
+- $X$ has shape $(5, 2)$.
+- $A^T$ is the transpose of $A$, so if $A$ has shape $(4, 2)$, then $A^T$ will have shape $(2, 4)$.
   
-  When you multiply $ X $ and $ A^T $, the resulting matrix will have a shape of $ (5, 4) $ because:
+  When you multiply $X$ and $A^T$, the resulting matrix will have a shape of $(5, 4)$ because:
   $$
   X \text{ has shape } (5, 2), A^T \text{ has shape } (2, 4) \quad \Rightarrow \quad XA^T \text{ has shape } (5, 4)
   $$
 
-Thus, the output of $ f(X) = XA^T + b $ will also have shape $ (5, 4) $.
+Thus, the output of $f(X) = XA^T + b$ will also have shape $(5, 4)$.
 
-### Step 2: Adjust the shape of $ b $
+### Step 2: Adjust the shape of $b$
 
-To match the output shape of $ f(X) $, the shape of $ b $ should be $ (5, 4) $. So, $ b $ should be a matrix of shape $ (5, 4) $.
+To match the output shape of $f(X)$, the shape of $b$ should be $(5, 4)$. So, $b$ should be a matrix of shape $(5, 4)$.
 
-### Step 3: Define the activation function $ S $
+### Step 3: Define the activation function $S$
 
-The activation function $ S $ is defined as:
+The activation function $S$ is defined as:
 $$
 S(f(X)) = \text{ReLU}(f(X))
 $$
@@ -35,20 +35,20 @@ The ReLU function applies element-wise to a matrix and replaces all negative val
 $$
 S(f(X))_{ij} = \max(f(X)_{ij}, 0)
 $$
-where $ f(X)_{ij} $ is the element of the matrix $ f(X) $.
+where $f(X)_{ij}$ is the element of the matrix $f(X)$.
 
-### Step 4: Compute the Jacobian of $ S(f(X)) $
+### Step 4: Compute the Jacobian of $S(f(X))$
 
-Now, to compute the Jacobian of $ S(f(X)) $, we need to calculate the derivative of the ReLU function. The derivative of ReLU is:
+Now, to compute the Jacobian of $S(f(X))$, we need to calculate the derivative of the ReLU function. The derivative of ReLU is:
 $$
 \frac{d}{dx} \text{ReLU}(x) = \begin{cases}
 1 & \text{if } x > 0 \\
 0 & \text{if } x \leq 0
 \end{cases}
 $$
-So, the derivative of $ S(f(X)) $ with respect to $ f(X) $ is a matrix of the same shape as $ f(X) $, where each element is 1 if the corresponding element of $ f(X) $ is positive and 0 if it is non-positive.
+So, the derivative of $S(f(X))$ with respect to $f(X)$ is a matrix of the same shape as $f(X)$, where each element is 1 if the corresponding element of $f(X)$ is positive and 0 if it is non-positive.
 
-Let's denote this element-wise derivative matrix as $ J_{\text{ReLU}}(f(X)) $, where:
+Let's denote this element-wise derivative matrix as $J_{\text{ReLU}}(f(X))$, where:
 $$
 J_{\text{ReLU}}(f(X))_{ij} = \frac{d}{df(X)_{ij}} \text{ReLU}(f(X)_{ij})
 $$
@@ -56,11 +56,11 @@ Thus, the Jacobian matrix will have the following form:
 $$
 J_{\text{ReLU}}(f(X)) = \text{diag}(\text{ReLU}(f(X)) > 0)
 $$
-where $ \text{diag}(\text{ReLU}(f(X)) > 0) $ indicates an element-wise comparison, creating a binary matrix of the same shape as $ f(X) $, where each entry is 1 if the corresponding entry in $ f(X) $ is positive, and 0 if it's zero or negative.
+where $\text{diag}(\text{ReLU}(f(X)) > 0)$ indicates an element-wise comparison, creating a binary matrix of the same shape as $f(X)$, where each entry is 1 if the corresponding entry in $f(X)$ is positive, and 0 if it's zero or negative.
 
 ### Final Answer: Derivative of Jacobian
 
-So, the derivative of the Jacobian matrix $ J_S $ of $ S(f(X)) $ is the element-wise derivative of ReLU, and it will have the same shape as $ f(X) $, which is $ (5, 4) $, and its elements will be:
+So, the derivative of the Jacobian matrix $J_S$ of $S(f(X))$ is the element-wise derivative of ReLU, and it will have the same shape as $f(X)$, which is $(5, 4)$, and its elements will be:
 $$
 J_S = \begin{bmatrix}
 1 & 1 & 0 & 0 \\
@@ -70,7 +70,7 @@ J_S = \begin{bmatrix}
 1 & 1 & 0 & 0
 \end{bmatrix}
 $$
-where 1's represent positive entries in $ f(X) $ and 0's represent non-positive entries.
+where 1's represent positive entries in $f(X)$ and 0's represent non-positive entries.
 
 In the context of matrices, the term **"diag"** refers to the **diagonal** elements of a matrix. Specifically, it can refer to:
 
@@ -84,9 +84,9 @@ In the context of matrices, the term **"diag"** refers to the **diagonal** eleme
    0 & 0 & a_3
    \end{bmatrix}
    $$
-   This matrix has values $ a_1, a_2, a_3 $ on the diagonal and zeros elsewhere.
+   This matrix has values $a_1, a_2, a_3$ on the diagonal and zeros elsewhere.
 
-2. **Extracting Diagonal Elements**: The term "diag" can also be used to refer to the operation of extracting the diagonal elements of a matrix to form a vector. For example, if you have a matrix $ M $, then:
+2. **Extracting Diagonal Elements**: The term "diag" can also be used to refer to the operation of extracting the diagonal elements of a matrix to form a vector. For example, if you have a matrix $M$, then:
    $$
    \text{diag}(M) = \text{Vector of diagonal elements of } M
    $$
@@ -101,7 +101,7 @@ In the context of matrices, the term **"diag"** refers to the **diagonal** eleme
    $$
    This extracts the values from the diagonal (1, 5, 9) and forms a vector.
 
-3. **Creating a Diagonal Matrix from a Vector**: If you have a vector $ v = [v_1, v_2, v_3] $, you can use **diag** to construct a diagonal matrix from the vector, where the elements of the vector are placed along the diagonal:
+3. **Creating a Diagonal Matrix from a Vector**: If you have a vector $v = [v_1, v_2, v_3]$, you can use **diag** to construct a diagonal matrix from the vector, where the elements of the vector are placed along the diagonal:
    $$
    \text{diag}(v) = \begin{bmatrix}
    v_1 & 0 & 0 \\
@@ -111,31 +111,30 @@ In the context of matrices, the term **"diag"** refers to the **diagonal** eleme
    $$
 
 ### In Your Context:
-When I mentioned **diag** in the Jacobian matrix for the ReLU function, I was using it to indicate that we should create a matrix where each diagonal element is the result of applying the derivative of ReLU (either 0 or 1) to the corresponding entry of $ f(X) $, and all off-diagonal elements are zero. So, in that case, **diag** would mean that the resulting matrix is a **diagonal matrix** with the ReLU derivative values on the diagonal and zeros elsewhere.
+When I mentioned **diag** in the Jacobian matrix for the ReLU function, I was using it to indicate that we should create a matrix where each diagonal element is the result of applying the derivative of ReLU (either 0 or 1) to the corresponding entry of $f(X)$, and all off-diagonal elements are zero. So, in that case, **diag** would mean that the resulting matrix is a **diagonal matrix** with the ReLU derivative values on the diagonal and zeros elsewhere.
 
-For example, if $ f(X) $ had some positive values and some non-positive ones, the Jacobian might look like:
+For example, if $f(X)$ had some positive values and some non-positive ones, the Jacobian might look like:
 $$
 J_{\text{ReLU}}(f(X)) = \text{diag}(1, 0, 1, 0, 1, \ldots)
 $$
-where the diagonal values are 1 for positive values of $ f(X) $, and 0 for non-positive ones.
-
+where the diagonal values are 1 for positive values of $f(X)$, and 0 for non-positive ones.
 
 You're right! The matrix I previously provided and the explanation about **"diag"** were not directly relevant in that context. 
 
 Let's clear up the confusion:
 
-In the case of the Jacobian matrix of $ S(f(X)) = \text{ReLU}(f(X)) $, the derivative is applied **element-wise** across the matrix $ f(X) $. The ReLU function outputs 0 for negative inputs and the input itself for positive inputs, so the derivative of ReLU is 0 for non-positive values and 1 for positive values. This element-wise derivative results in a **binary matrix**, where:
+In the case of the Jacobian matrix of $S(f(X)) = \text{ReLU}(f(X))$, the derivative is applied **element-wise** across the matrix $f(X)$. The ReLU function outputs 0 for negative inputs and the input itself for positive inputs, so the derivative of ReLU is 0 for non-positive values and 1 for positive values. This element-wise derivative results in a **binary matrix**, where:
 
-- Each element is 1 if the corresponding element of $ f(X) $ is positive.
-- Each element is 0 if the corresponding element of $ f(X) $ is non-positive (i.e., 0 or negative).
+- Each element is 1 if the corresponding element of $f(X)$ is positive.
+- Each element is 0 if the corresponding element of $f(X)$ is non-positive (i.e., 0 or negative).
 
-So, for a matrix $ f(X) $ with shape $ (5, 4) $, the Jacobian $ J_S $ will be a matrix of the same shape where:
+So, for a matrix $f(X)$ with shape $(5, 4)$, the Jacobian $J_S$ will be a matrix of the same shape where:
 
-- **1's represent positive values** in $ f(X) $.
-- **0's represent non-positive values** in $ f(X) $.
+- **1's represent positive values** in $f(X)$.
+- **0's represent non-positive values** in $f(X)$.
 
 ### Example:
-If $ f(X) $ is something like:
+If $f(X)$ is something like:
 $$
 f(X) = \begin{bmatrix}
 0.5 & -0.2 & 0.3 & -0.8 \\
@@ -145,7 +144,7 @@ f(X) = \begin{bmatrix}
 -0.5 & 1.3 & 0.4 & -0.2
 \end{bmatrix}
 $$
-Then, the Jacobian matrix $ J_S $ will be:
+Then, the Jacobian matrix $J_S$ will be:
 $$
 J_S = \begin{bmatrix}
 1 & 0 & 1 & 0 \\
@@ -155,7 +154,7 @@ J_S = \begin{bmatrix}
 0 & 1 & 1 & 0
 \end{bmatrix}
 $$
-Each element is 1 where the corresponding element in $ f(X) $ is positive and 0 where it is non-positive.
+Each element is 1 where the corresponding element in $f(X)$ is positive and 0 where it is non-positive.
 
 Thank you for pointing that out!
 
@@ -188,7 +187,7 @@ $$
 S(f(X)) = \text{Softmax}(f(X))
 $$
 
-The **Softmax** function is applied to the columns of $ f(X) $, meaning that for each column $ i $, we apply Softmax as follows:
+The **Softmax** function is applied to the columns of $f(X)$, meaning that for each column $i$, we apply Softmax as follows:
 
 $$
 S(f(X))_{ij} = \frac{e^{f(X)_{ij}}}{\sum_{k=1}^{5} e^{f(X)_{kj}}}
@@ -198,7 +197,7 @@ Where the denominator is the sum of exponentials of each element in the column.
 
 ### Step 3: Compute the derivative of the Jacobian matrix of Softmax
 
-The derivative of the Softmax function with respect to its input is given by the Jacobian matrix, which has a special structure. For a vector $ \mathbf{y} = \text{Softmax}(\mathbf{z}) $, the Jacobian matrix $ J_{\text{Softmax}} $ is:
+The derivative of the Softmax function with respect to its input is given by the Jacobian matrix, which has a special structure. For a vector $\mathbf{y} = \text{Softmax}(\mathbf{z})$, the Jacobian matrix $J_{\text{Softmax}}$ is:
 
 $$
 J_{\text{Softmax}}(f(X))_{ij} = 
@@ -207,13 +206,14 @@ y_i (1 - y_j) & \text{if } i = j \\
 -y_i y_j & \text{if } i \neq j
 \end{cases}
 $$
+
 Where:
-- $ y_i $ is the $ i $-th element of the Softmax output vector.
+- $y_i$ is the $i$-th element of the Softmax output vector.
 - The matrix is **sparse**, with diagonal elements representing the gradient of Softmax with respect to the same element, and off-diagonal elements representing the interaction between different components.
 
 ### Step 4: Example with Input Values
 
-Let’s take a simple example where we set the input values of $ X $ to be from 1 to 10, arranged in a shape of $ (5, 2) $.
+Let’s take a simple example where we set the input values of $X$ to be from 1 to 10, arranged in a shape of $(5, 2)$. 
 
 So, let:
 
@@ -227,13 +227,13 @@ X = \begin{bmatrix}
 \end{bmatrix}
 $$
 
-Now, let’s assume $ A $ is of shape $ (4, 2) $ (which could be any values that match this shape), and $ b $ is of shape $ (5, 4) $. Since we are focusing on Softmax, we’ll compute $ f(X) = XA^T + b $ and apply the Softmax to that result.
+Now, let’s assume $A$ is of shape $(4, 2)$ (which could be any values that match this shape), and $b$ is of shape $(5, 4)$. Since we are focusing on Softmax, we’ll compute $f(X) = XA^T + b$ and apply the Softmax to that result.
 
-For simplicity, let's assume $ A = \begin{bmatrix} 1 & 2 \\ 3 & 4 \\ 5 & 6 \\ 7 & 8 \end{bmatrix} $ and $ b = \begin{bmatrix} 0 & 0 & 0 & 0 \\ 0 & 0 & 0 & 0 \\ 0 & 0 & 0 & 0 \\ 0 & 0 & 0 & 0 \\ 0 & 0 & 0 & 0 \end{bmatrix} $.
+For simplicity, let's assume $A = \begin{bmatrix} 1 & 2 \\ 3 & 4 \\ 5 & 6 \\ 7 & 8 \end{bmatrix}$ and $b = \begin{bmatrix} 0 & 0 & 0 & 0 \\ 0 & 0 & 0 & 0 \\ 0 & 0 & 0 & 0 \\ 0 & 0 & 0 & 0 \\ 0 & 0 & 0 & 0 \end{bmatrix}$. 
 
 Now let’s compute:
 
-1. **Calculate $ f(X) = XA^T + b $:**
+1. **Calculate $f(X) = XA^T + b$:** 
 
 $$
 XA^T = \begin{bmatrix}
@@ -256,23 +256,23 @@ XA^T = \begin{bmatrix}
 \end{bmatrix}
 $$
 
-Since $ b = 0 $, the result is simply the matrix $ f(X) = XA^T $, as shown above.
+Since $b = 0$, the result is simply the matrix $f(X) = XA^T$, as shown above.
 
 2. **Apply Softmax:**
 
 To apply Softmax to each column:
 
-- For column 1, $ \text{Softmax}(5, 11, 17, 23, 29) $:
+- For column 1, $\text{Softmax}(5, 11, 17, 23, 29)$:
   $$
   \text{exp}(5) = 148.4132, \text{exp}(11) = 59874.1417, \text{exp}(17) = 241549.3195, \text{exp}(23) = 1.016330\cdot 10^{10}, \text{exp}(29) = 1.785746\cdot 10^{12}
   $$
-  The sum of these exponentials is $ 1.786755\cdot 10^{12} $. Dividing each by this sum gives the Softmax values for the first column.
+  The sum of these exponentials is $1.786755\cdot 10^{12}$. Dividing each by this sum gives the Softmax values for the first column.
 
 - Similarly, apply Softmax to each of the other columns.
 
 3. **Compute the Jacobian:**
 
-Using the Softmax results, compute the Jacobian matrix $ J_{\text{Softmax}} $, applying the formula for the derivative of Softmax. This matrix will have the same shape as $ f(X) $, which is $ (5, 4) $.
+Using the Softmax results, compute the Jacobian matrix $J_{\text{Softmax}}$, applying the formula for the derivative of Softmax. This matrix will have the same shape as $f(X)$, which is $(5, 4)$. 
 
 ---
 
@@ -747,6 +747,108 @@ y_i = \frac{e^{z_i}}{\sum_{k=1}^{n} e^{z_k}}
 $$
 
 This is the standard form for calculating the probability of class $ i $ in the softmax function, where $ z_i $ is the raw score or logit for class $ i $, and the denominator is the sum of exponentials of all logits.
+
+5. **Apply the quotient rule:**
+   $$
+   \frac{\partial y_i}{\partial z_i} = \frac{e^{z_i} \left( \sum_{k=1}^{n} e^{z_k} \right) - e^{z_i} \cdot e^{z_i}}{\left( \sum_{k=1}^{n} e^{z_k} \right)^2}
+   $$
+
+6. **Simplify the numerator:**
+   $$
+   \frac{\partial y_i}{\partial z_i} = \frac{e^{z_i} \left( \sum_{k=1}^{n} e^{z_k} - e^{z_i} \right)}{\left( \sum_{k=1}^{n} e^{z_k} \right)^2}
+   $$
+
+7. **Notice the structure of the numerator:**
+   The term inside the parentheses is the same as $ \sum_{k \neq i} e^{z_k} $, as we noted in the first equation. So we have:
+
+   $$
+   \frac{\partial y_i}{\partial z_i} = \frac{e^{z_i} \cdot \sum_{k \neq i} e^{z_k}}{\left( \sum_{k=1}^{n} e^{z_k} \right)^2}
+   $$
+
+8. **Factor out the expression for $ y_i $:**
+   Now, observe that:
+
+   $$
+   y_i = \frac{e^{z_i}}{\sum_{k=1}^{n} e^{z_k}}
+   $$
+
+   Therefore, $ 1 - y_i = \frac{\sum_{k \neq i} e^{z_k}}{\sum_{k=1}^{n} e^{z_k}} $.
+
+   So, we can rewrite the derivative as:
+
+   $$
+   \frac{\partial y_i}{\partial z_i} = y_i \left( 1 - y_i \right)
+   $$
+
+### Conclusion:
+
+- The term $ y_i $ represents the probability of class $ i $ in the softmax function.
+- The derivative $ \frac{\partial y_i}{\partial z_i} = y_i (1 - y_i) $ is the key property of the softmax function. It shows how the probability of class $ i $ changes with respect to its input $ z_i $, and this is very useful in backpropagation for optimization in machine learning models.
+Sure! Let's break it down step by step.
+
+### Step 1: Understanding the first equation
+You have the sum:
+
+$$
+\sum_{k=1}^{n} e^{z_k} - e^{z_i} = \sum_{k \neq i} e^{z_k}
+$$
+
+#### Interpretation:
+
+This equation is dealing with a sum over $ e^{z_k} $ where $ k $ ranges from 1 to $ n $, with the condition that you're subtracting the term $ e^{z_i} $ from the sum.
+
+- The left-hand side involves summing all terms $ e^{z_k} $ for $ k $ from 1 to $ n $, but excluding the term when $ k = i $.
+- The right-hand side shows the sum over all $ k \neq i $, i.e., the sum of all $ e^{z_k} $ where $ k $ is not equal to $ i $.
+
+The equation tells us that if you subtract the term $ e^{z_i} $ from the total sum, you're left with exactly the sum of all terms $ e^{z_k} $ for $ k \neq i $.
+
+### Step 2: Derivative of $ y_i $
+
+Now let's look at the next part:
+
+$$
+\frac{\partial y_i}{\partial z_i} = y_i (1 - y_i)
+$$
+
+#### Context:
+
+We might be dealing with a **softmax function**, which is often used in machine learning for classification tasks. The function is defined as:
+
+$$
+y_i = \frac{e^{z_i}}{\sum_{k=1}^{n} e^{z_k}}
+$$
+
+This is the probability of class $ i $ in a classification setting, where $ y_i $ depends on the $ z_i $ (often called logits or raw scores).
+
+#### Derivation of the derivative:
+
+Now, let’s differentiate $ y_i $ with respect to $ z_i $:
+
+1. **Start with the expression for $ y_i $:**
+   $$
+   y_i = \frac{e^{z_i}}{\sum_{k=1}^{n} e^{z_k}}
+   $$
+
+2. **Use the quotient rule** for derivatives. The quotient rule states that for a function of the form $ \frac{u(z)}{v(z)} $, the derivative is:
+
+   $$
+   \frac{d}{dz} \left( \frac{u(z)}{v(z)} \right) = \frac{u'(z) v(z) - u(z) v'(z)}{[v(z)]^2}
+   $$
+
+   Here, $ u(z) = e^{z_i} $ and $ v(z) = \sum_{k=1}^{n} e^{z_k} $.
+
+3. **Differentiate $ u(z) = e^{z_i} $:**
+   $$
+   u'(z) = \frac{d}{dz_i} e^{z_i} = e^{z_i}
+   $$
+
+4. **Differentiate $ v(z) = \sum_{k=1}^{n} e^{z_k} $ with respect to $ z_i $:**
+
+   Since the sum involves $ e^{z_k} $ for all $ k $, the derivative with respect to $ z_i $ affects only the $ e^{z_i} $ term (because all other terms are constants when differentiating with respect to $ z_i $):
+
+   $$
+   v'(z_i) = e^{z_i}
+   $$
 
 5. **Apply the quotient rule:**
    $$
