@@ -1,6 +1,5 @@
 
 
-
 ## **Introduction to Recurrent Neural Networks (RNNs)**
 
 Before exploring LSTMs, it's essential to understand the limitations of traditional Recurrent Neural Networks (RNNs) and why LSTMs were introduced.
